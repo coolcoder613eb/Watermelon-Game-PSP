@@ -1,8 +1,13 @@
+#ifdef PLATFORM_PSP
 #include <pspkernel.h>
 #include <pspdisplay.h>
 #include <pspdebug.h>
 #include <pspctrl.h>
 #include <pspfpu.h>
+#else
+#define pspFpuSqrt(x) sqrtf(x)
+#define pspFpuRsqrt(x) (1.0f / sqrtf(x))
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
