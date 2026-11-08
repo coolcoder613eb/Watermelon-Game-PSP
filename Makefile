@@ -119,7 +119,7 @@ ANDROID_BUILD = build/ANDROID
 RAYLIB_MODULES = rcore rshapes rtextures rtext rmodels raudio
 GLUE_SRC = $(SRC_DIR)/android/android_native_app_glue.c
 
-ANDROID_RESOURCES = $(SRC_DIR)/Resources $(wildcard $(SRC_DIR)/Resources/*) res $(wildcard res/* res/*/*)
+ANDROID_RESOURCES = $(shell find $(SRC_DIR)/Resources res -type f -print | sed 's/ /\\ /g')
 $(TARGET): $(BUILD_DIR) $(SRCS) $(HEADERS) $(GLUE_SRC) $(ANDROID_RESOURCES) $(RAYLIB_INPUTS) AndroidManifest.xml
 	@set -eu; \
 	for abi in armeabi-v7a arm64-v8a; do \

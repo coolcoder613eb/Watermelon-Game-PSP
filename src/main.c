@@ -102,6 +102,20 @@ typedef enum {
 static SoundMode currentSoundMode = SOUND_LOUD;
 static int highScore = 0;
 
+static int FitScaleToScreen(int width, int height, float boxWidth, float boxHeight,
+                            float minTopMargin, float bottomBarPerScale) {
+    int scale = 1;
+    for (int candidate = 1; ; candidate++) {
+        float ppu = 30.0f * (float)candidate;
+        float bottomBarPx = bottomBarPerScale * (float)candidate;
+        float requiredWidthPx = boxWidth * ppu;
+        float requiredHeightPx = (minTopMargin + boxHeight) * ppu + bottomBarPx;
+        if (requiredWidthPx > (float)width || requiredHeightPx > (float)height) break;
+        scale = candidate;
+    }
+    return scale;
+}
+
 #if defined(PLATFORM_ANDROID)
 #include <android/native_activity.h>
 #include "android/android_native_app_glue.h"
@@ -201,58 +215,22 @@ int main(int argc, char *argv[]) {
 
     isPortrait = (screenHeight > screenWidth);
 
-    if (isPortrait) {
-        // Find the largest integer scale that fits the playfield width and
-        // the playfield plus its scale-relative bottom bar in the height.
-        // The old fixed 40px height deduction did not match the actual bar,
-        // which is 20px per scale unit.
-        scale = 1;
-        for (int candidate = 1; ; candidate++) {
-            float ppu = 30.0f * (float)candidate;
-            float boxWidthPx = 6.5f * ppu;
-            float bottomBarPx = 40.0f * ((float)candidate / 2.0f);
-            float topMargin = ((float)screenHeight / ppu) - 7.6f - (bottomBarPx / ppu);
-            if (topMargin < 2.0f) topMargin = 2.0f;
-            float requiredHeightPx = (topMargin + 7.6f) * ppu + bottomBarPx;
-            if (boxWidthPx > (float)screenWidth || requiredHeightPx > (float)screenHeight) break;
-            scale = candidate;
-        }
-
-        PixelsPerUnit = 30.0f * (float)scale;
-        BoxWidth = 6.5f;
-        BoxHeight = 7.6f;
-        BoxTopLineHeight = 6.7f;
-        BoxDiagonalLineHeight = 0.5f;
-
-        float bottomBarPx = 40.0f * ((float)scale / 2.0f);
-        BoxTopMargin = ((float)screenHeight / PixelsPerUnit) - BoxHeight - (bottomBarPx / PixelsPerUnit);
-        if (BoxTopMargin < 2.0f) BoxTopMargin = 2.0f;
-        BoxFloorY = BoxTopMargin + BoxHeight;
-        BoxLeftMargin = ((float)screenWidth / PixelsPerUnit / 2.0f) - (BoxWidth / 2.0f);
-        Gravity = 2.0f * BoxHeight / (TimeToFall * TimeToFall);
-    } else if (screenWidth == 640 && screenHeight == 480) {
-        scale = 2;
-        PixelsPerUnit = 60.0f;
-        BoxWidth = 6.5f;
-        BoxHeight = 7.2f;
-        BoxTopLineHeight = 6.4f;
-        BoxDiagonalLineHeight = 0.5f;
-        BoxTopMargin = 0.4f;
-        BoxFloorY = BoxTopMargin + BoxHeight;
-        BoxLeftMargin = ((float)screenWidth / PixelsPerUnit / 2.0f) - (BoxWidth / 2.0f);
-        Gravity = 2.0f * BoxHeight / (TimeToFall * TimeToFall);
-    } else {
-        scale = 1;
-        PixelsPerUnit = 30.0f;
-        BoxWidth = 6.5f;
-        BoxHeight = 7.6f;
-        BoxTopLineHeight = 6.7f;
-        BoxDiagonalLineHeight = 0.5f;
-        BoxTopMargin = 1.0f;
-        BoxFloorY = BoxTopMargin + BoxHeight;
-        BoxLeftMargin = ((float)screenWidth / PixelsPerUnit / 2.0f) - (BoxWidth / 2.0f);
-        Gravity = 2.0f * BoxHeight / (TimeToFall * TimeToFall);
-    }
+    // Fit the playfield and bottom bar to the actual display at an integer scale.
+    BoxWidth = 6.5f;
+    BoxHeight = isPortrait ? 7.6f : 7.2f;
+    BoxTopLineHeight = isPortrait ? 6.7f : 6.4f;
+    BoxDiagonalLineHeight = 0.5f;
+    float minTopMargin = isPortrait ? 2.0f : 0.4f;
+    float bottomBarPerScale = isPortrait ? 20.0f : 12.0f;
+    scale = FitScaleToScreen(screenWidth, screenHeight, BoxWidth, BoxHeight,
+                             minTopMargin, bottomBarPerScale);
+    PixelsPerUnit = 30.0f * (float)scale;
+    float bottomBarPx = bottomBarPerScale * (float)scale;
+    BoxTopMargin = ((float)screenHeight / PixelsPerUnit) - BoxHeight - (bottomBarPx / PixelsPerUnit);
+    if (BoxTopMargin < minTopMargin) BoxTopMargin = minTopMargin;
+    BoxFloorY = BoxTopMargin + BoxHeight;
+    BoxLeftMargin = ((float)screenWidth / PixelsPerUnit / 2.0f) - (BoxWidth / 2.0f);
+    Gravity = 2.0f * BoxHeight / (TimeToFall * TimeToFall);
 #endif
 
 #if !defined(PLATFORM_PSP)
