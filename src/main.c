@@ -584,7 +584,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (GameOver) {
-            if (btnRestart || (hasDirectPointer && btnDrop) || btnDrop) {
+            if (btnRestart || btnDrop) {
                 timeSinceLastBall = 0.5f;
                 BallsN = 0;
                 initBall(&heldBall);

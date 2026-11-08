@@ -21,7 +21,7 @@ extern float BoxFloorY;
 extern float Gravity;
 extern bool isPortrait;
 
-static const float TextLeftMargin = 2.0f;
+static const float TextLeftMargin = 2.0;
 
 static const Color BackgroundColor = {208,196,156,255};
 static const Color BoxColor = {235,223,177,192};
@@ -29,7 +29,7 @@ static const Color FloorBottomColor = {146,106,82,255};
 static const Color FloorTopColor = {175,131,105,255};
 static const Color OutlineColor = {75,35,8,255};
 
-static const float AnalogDeadzonePercent = 0.15f;
+static const float AnalogDeadzonePercent = 0.15;
 
 static const float TimeToFall = 1.0f;
 static const float AirResistance = 4.25f;
@@ -41,7 +41,7 @@ static const int CollPasses = 4;
 static const int TicksPerFrame = 4;
 static const float InvTicksPerFrame = 1.0f / ((float) TicksPerFrame);
 
-static const float BallRadius [] = {0.2f,0.25f,0.45f,0.5f,0.6f,0.75f,0.85f,1.05f,1.15f,1.45f,1.7f};
+static const float BallRadius [] = {0.2f,0.25f,0.45f,0.5f,0.6f,0.75f,0.85f,1.05f,1.15f,1.45,1.7};
 static const Color BallColors [] = {DARKBLUE,RED,LIME,GOLD,ORANGE,MAROON,PINK,BROWN,GREEN,YELLOW,DARKGREEN};
 static const int BallTypesN = sizeof(BallRadius) / sizeof(BallRadius[0]);
 static const int BallScores [] = {1,3,7,9,13,21,27,34,44,62,90};
@@ -54,5 +54,8 @@ extern float DeltaTime;
 extern int Score;
 extern int DispScore;
 extern bool GameOver;
+
+// #define DeltaTime (((float) GetFrameTime()) / TicksPerFrame)
+// static const float DeltaTime = (0.0333f / TicksPerFrame);
 
 #endif

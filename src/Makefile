@@ -2,7 +2,7 @@ BUILD_PRX = 1
 TARGET = raylib
 OBJS = main.o physics.o graphics.o random.o
 INCDIR =
-CFLAGS = -Wall -O3 -g
+CFLAGS = -Wall -O3 -g -DPLATFORM_PSP
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 

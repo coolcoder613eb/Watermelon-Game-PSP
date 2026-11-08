@@ -4,13 +4,19 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <raylib.h>
+#include <physics.h>
+#include <graphics.h>
+#include <random.h>
+#include <constants.h>
+
 #ifdef PLATFORM_PSP
 #include <pspkernel.h>
 #include <pspdisplay.h>
 #include <pspdebug.h>
 #include <pspctrl.h>
 
-static SceKernelUtilsMt19937Context rngContext;
+SceKernelUtilsMt19937Context rngContext;
 
 void initRng() {
     int rngSeed = sceKernelGetSystemTimeLow();
@@ -18,12 +24,11 @@ void initRng() {
 }
 
 int rng(int n) {
-    if (n <= 0) return 0;
     return sceKernelUtilsMt19937UInt(&rngContext) % n;
 }
 
 float rngf(float minf, float maxf) {
-    return minf + (maxf - minf) * (((float)sceKernelUtilsMt19937UInt(&rngContext)) / (float)INT32_MAX);
+    return minf + (maxf - minf) * (((float)sceKernelUtilsMt19937UInt(&rngContext)) / INT32_MAX);
 }
 #else
 #include <time.h>
@@ -44,7 +49,6 @@ void initRng() {
 }
 
 int rng(int n) {
-    if (n <= 0) return 0;
     return (int)(xorshift32() % (uint32_t)n);
 }
 
